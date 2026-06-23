@@ -201,81 +201,19 @@ source install/setup.bash
 
 ---
 
-## 10. Run a ROS 2 Node
+
+## 10. Run an example
 
 After building, source the workspace:
 
 ```bash
-cd ~/ros2_ws
-source /opt/ros/humble/setup.bash
-source install/setup.bash
+ros2 launch turtlesim_controller go_to_goal.launch.py
 ```
-
-Run a node:
-
-```bash
-ros2 run <package_name> <node_name>
-```
-
-Example:
-
-```bash
-ros2 run turtlesim_controller goal_point_publisher_node
-```
+This should run a turtlesim simualtor GUI, a goal publisher interface GUI, and the back-end position-controller of the robot. 
 
 ---
 
-## 11. Run turtlesim
-
-To test graphics inside the Docker container:
-
-```bash
-source /opt/ros/humble/setup.bash
-ros2 run turtlesim turtlesim_node
-```
-
-A turtlesim window should appear through XQuartz.
-
----
-
-## 12. Useful Commands
-
-List ROS 2 packages:
-
-```bash
-ros2 pkg list
-```
-
-List executables in a package:
-
-```bash
-ros2 pkg executables <package_name>
-```
-
-Echo a topic:
-
-```bash
-ros2 topic echo /topic_name
-```
-
-Example:
-
-```bash
-ros2 topic echo /goal
-```
-
-Clean and rebuild the workspace:
-
-```bash
-cd ~/ros2_ws
-rm -rf build install log
-colcon build
-source install/setup.bash
-```
-
----
-
-## 13. Notes About the Docker Script
+## 11. Notes About the Docker Script
 
 The script:
 
