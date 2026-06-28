@@ -141,7 +141,7 @@ This step requires an internet connection.
 
 ---
 
-## 8. Install ROS dependencies and build the workspace
+## 8. Install ROS dependencies and build the workspace (This is for main branch main only)
 
 Inside the container:
 
@@ -176,7 +176,7 @@ The `colcon build` step does not require internet if all dependencies are alread
 
 ---
 
-## 9. Run an example
+## 9. Run an example (Not available from tutorial branch)
 
 After building, source the workspace:
 
