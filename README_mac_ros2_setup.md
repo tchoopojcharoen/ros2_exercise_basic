@@ -1,7 +1,4 @@
-# ROS 2 Basic Exercise
-
-This repository contains basic ROS 2 packages and a helper script for running
-ROS 2 Humble inside Docker on macOS with Colima.
+# # Using ROS2 in Docker Container via Colima
 
 The setup assumes:
 
