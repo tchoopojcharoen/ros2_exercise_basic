@@ -179,7 +179,7 @@ This only needs to be done once.
 
 The following steps must be completed once for each new named container.
 Installed packages and configuration remain available when that container is
-stopped and restarted.
+stopped and restarted. If the container is removed, the following steps must be performed gain.
 
 ## 7. Create and enter the container
 
