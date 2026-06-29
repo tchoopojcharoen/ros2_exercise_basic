@@ -47,7 +47,7 @@ Clone the `tutorials` branch into your WSL home directory:
 
 ```bash
 cd ~
-git clone -b tutorials https://github.com/tchoopojcharoen/ros2_exercise_basic.git
+git clone -b main https://github.com/tchoopojcharoen/ros2_exercise_basic.git
 ```
 
 The repository contains the ROS 2 tutorial packages and:
