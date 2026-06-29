@@ -1,4 +1,4 @@
-## Using ROS2 in Docker Container via Colima
+# Using ROS2 in Docker Container via Colima
 
 The setup assumes:
 
