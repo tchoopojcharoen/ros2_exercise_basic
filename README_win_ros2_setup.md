@@ -109,7 +109,7 @@ This step requires an internet connection.
 ## 6. Make the Docker script executable
 
 ```bash
-chmod +x ~/ros2_ws/src/run_docker_ros2_win.sh
+chmod +x <locaiton of the file>/run_docker_ros2_win.sh <session name>
 ```
 
 This only needs to be done once.
