@@ -103,7 +103,6 @@ goal_point_publisher ──► /turtle1/goal ─────────► turt
 ```
 ros2_tutorial/
 ├── goal_point_publisher/      # Pre-built helper — GUI node that publishes goal points
-├── go_to_goal.py              # Reference lifecycle controller (used in Module 4)
 ├── module_01_basic_ros2_clis/ # Module 1 markdown files
 ├── module_02_writing_nodes/   # Module 2 markdown files + control_law.py
 │   └── control_law.py         # Proportional go-to-goal function (copy into your package)
@@ -159,7 +158,7 @@ You will rebuild frequently as you add nodes. The tutorial reminds you when to r
 
 ---
 ## To Windows and MacOs Users
-Do not fret. You can follow [README_win_ros2_setup.md](README_win_ros2_setup.md) and [README_mac_ros2_setup.md](README_mac_ros2_setup.md) to run Linux sub-system and docker container that has ROS2 humble pre-installed. Once you are comfortable with openning multiple terminal with the set-up, you can follow the tutorials as normal.
+Do not fret. You can follow [SETUP_WIN.md](SETUP_WIN.md) and [SETUP_MAC.md](SETUP_MAC.md) to run Linux sub-system and docker container that has ROS2 humble pre-installed. Once you are comfortable with openning multiple terminal with the set-up, you can follow the tutorials as normal.
 
 ---
 
