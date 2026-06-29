@@ -7,8 +7,8 @@ The setup assumes:
 
 * macOS with Colima and Docker installed
 * XQuartz is used to display Linux GUI applications
-* The Docker image used is `osrf/ros:humble-desktop-full`
-* A ROS 2 workspace is located at `~/ros2_ws`
+* The Docker image is `osrf/ros:humble-desktop-full`
+* The ROS 2 workspace is located at `~/ros2_ws`
 * All ROS 2 terminals use the same Docker container
 
 ---
@@ -20,18 +20,127 @@ An internet connection is required when:
 * Cloning this repository
 * Pulling the Docker image
 * Installing Linux packages with `apt`
-* Installing Python packages with `pip`
-* Installing ROS dependencies with `rosdep`
 
-After all required packages are installed and the workspace has been built, an
-internet connection is **not required** to run existing ROS 2 nodes or launch
-files locally.
+After the image and required packages are installed, an internet connection is
+not required to run existing ROS 2 nodes or launch files locally.
 
 ---
 
-## 1. Start Colima
+# One-Time Mac Setup
 
-Open Terminal on macOS and run:
+## 1. Clone the repository
+
+Clone the `tutorials` branch into your home directory:
+
+```bash
+cd ~
+git clone -b tutorials https://github.com/tchoopojcharoen/ros2_exercise_basic.git
+```
+
+The repository contains the ROS 2 tutorial packages and:
+
+```text
+run_docker_ros2_mac.sh
+```
+
+This script creates or opens the ROS 2 Docker container.
+
+---
+
+## 2. Create the ROS 2 workspace
+
+The Docker script expects the workspace to be located at `~/ros2_ws`.
+
+Create it:
+
+```bash
+mkdir -p ~/ros2_ws/src
+```
+
+Move the repository contents into the workspace:
+
+```bash
+cp -R ~/ros2_exercise_basic/. ~/ros2_ws/src/
+rm -rf ~/ros2_exercise_basic
+```
+
+The workspace should now resemble:
+
+```text
+~/ros2_ws/
+└── src/
+    ├── run_docker_ros2_mac.sh
+    ├── README.md
+    ├── <ros2_package_1>/
+    └── <ros2_package_2>/
+```
+
+If a different workspace location is used, update the workspace path inside
+`run_docker_ros2_mac.sh`.
+
+---
+
+## 3. Install and configure XQuartz
+
+Install XQuartz:
+
+```bash
+brew install --cask xquartz
+```
+
+After installation, close the current Terminal window and open a new one.
+An already-open terminal may not detect the XQuartz commands and may report:
+
+```text
+xhost: command not found
+```
+
+Verify that `xhost` is installed:
+
+```bash
+/opt/X11/bin/xhost -help
+```
+
+Enable network connections:
+
+```bash
+defaults write org.xquartz.X11 nolisten_tcp -bool false
+```
+
+Restart XQuartz:
+
+```bash
+killall XQuartz 2>/dev/null
+open -a XQuartz
+```
+
+Wait a few seconds, then set the display and allow local connections:
+
+```bash
+export DISPLAY=:0
+/opt/X11/bin/xhost +localhost
+/opt/X11/bin/xhost +127.0.0.1
+```
+
+Expected output resembles:
+
+```text
+localhost being added to access control list
+127.0.0.1 being added to access control list
+```
+
+Setting `DISPLAY=:0` prevents this error:
+
+```text
+xhost: unable to open display ""
+```
+
+Using `/opt/X11/bin/xhost` directly also works when `xhost` has not yet been
+added to `PATH`.
+
+---
+
+## 4. Start Colima
 
 ```bash
 colima start
@@ -46,146 +155,7 @@ docker ps
 
 ---
 
-## 2. Install and configure XQuartz
-
-Install XQuartz:
-
-```bash
-brew install --cask xquartz
-```
-
-After installation, **close the current Terminal window and open a new one**.
-The XQuartz installer adds `/opt/X11/bin` to the shell search path, but an
-already-open terminal may not detect this change. This can cause:
-
-```text
-xhost: command not found
-```
-
-Verify the installation:
-
-```bash
-/opt/X11/bin/xhost -help
-```
-
-Enable XQuartz network connections:
-
-```bash
-defaults write org.xquartz.X11 nolisten_tcp -bool false
-```
-
-Restart XQuartz:
-
-```bash
-killall XQuartz 2>/dev/null
-open -a XQuartz
-```
-
-In XQuartz, open:
-
-```text
-XQuartz > Settings > Security
-```
-
-Enable:
-
-```text
-Allow connections from network clients
-```
-
-Restart XQuartz again:
-
-```bash
-killall XQuartz
-open -a XQuartz
-```
-
-Wait a few seconds for XQuartz to finish starting. The `DISPLAY` variable in a
-normal macOS terminal may be empty, which causes:
-
-```text
-xhost: unable to open display ""
-```
-
-Set the display explicitly before running `xhost`:
-
-```bash
-export DISPLAY=:0
-/opt/X11/bin/xhost +localhost
-/opt/X11/bin/xhost +127.0.0.1
-```
-
-Using `/opt/X11/bin/xhost` directly also works when the `xhost` command has not
-yet been added to `PATH`.
-
-Expected output resembles:
-
-```text
-localhost being added to access control list
-127.0.0.1 being added to access control list
-```
-
-If `DISPLAY=:0` does not connect, obtain the display created by XQuartz:
-
-```bash
-export DISPLAY="$(launchctl getenv DISPLAY)"
-echo "$DISPLAY"
-/opt/X11/bin/xhost +localhost
-/opt/X11/bin/xhost +127.0.0.1
-```
-
-If `launchctl getenv DISPLAY` is also empty, quit XQuartz and the current
-Terminal window. Reopen XQuartz first, open a new Terminal window, and repeat:
-
-```bash
-export DISPLAY=:0
-/opt/X11/bin/xhost +localhost
-/opt/X11/bin/xhost +127.0.0.1
-```
-
-Run these commands again after restarting XQuartz or macOS.
-
----
-
-## 3. Create a ROS 2 workspace
-
-```bash
-cd ~
-mkdir -p ~/ros2_ws/src
-```
-
----
-
-## 4. Clone this repository
-
-Clone the repository into your home directory:
-
-```bash
-cd ~
-git clone -b main https://github.com/tchoopojcharoen/ros2_exercise_basic.git
-```
-
-Move the repository contents into the ROS 2 workspace `src` folder:
-
-```bash
-mv ros2_exercise_basic/* ~/ros2_ws/src/
-rm -rf ros2_exercise_basic
-```
-
-Your workspace should now look like this:
-
-```text
-~/ros2_ws/
-└── src/
-    ├── run_docker_ros2_mac.sh
-    ├── README.md
-    ├── <ros2_package_1>/
-    └── <ros2_package_2>/
-```
-
----
-
-## 5. Pull the ROS 2 Humble Docker image
+## 5. Pull the ROS 2 Docker image
 
 ```bash
 docker pull osrf/ros:humble-desktop-full
@@ -195,35 +165,44 @@ This step requires an internet connection.
 
 ---
 
-## 6. Run the ROS 2 Docker container
-
-Make the Docker script executable:
+## 6. Make the Docker script executable
 
 ```bash
 chmod +x ~/ros2_ws/src/run_docker_ros2_mac.sh
 ```
 
-Run the container:
+This only needs to be done once.
+
+---
+
+# One-Time Container Setup
+
+The following steps must be completed once for each new named container.
+Installed packages and configuration remain available when that container is
+stopped and restarted.
+
+## 7. Create and enter the container
+
+Choose a session name, such as `session1`:
 
 ```bash
 source ~/ros2_ws/src/run_docker_ros2_mac.sh session1
 ```
 
-This starts a long-running ROS 2 Humble container with:
+The script starts a long-running ROS 2 Humble container with:
 
 * XQuartz graphics support
-* CycloneDDS configuration
+* CycloneDDS environment settings
 * Localhost-only ROS 2 discovery
-* The workspace mounted at `/root/ros2_ws`
+* `~/ros2_ws` mounted at `/root/ros2_ws`
 
-Use the same session name in every terminal so that all nodes run inside the
-same container.
+Use the same session name in every terminal.
 
 ---
 
-## 7. Install required system packages
+## 8. Install the required packages
 
-Inside the Docker container, run:
+Inside the container:
 
 ```bash
 apt update
@@ -233,21 +212,23 @@ apt install -y \
   ros-humble-rmw-cyclonedds-cpp
 ```
 
-`python3-pip` is needed to install Python dependencies from
-`requirements.txt`.
+The packages provide:
 
-`libxcb-cursor0` is needed by PyQt6/Qt to load the `xcb` platform plugin.
+* `python3-pip`: installation of Python dependencies
+* `libxcb-cursor0`: the Qt `xcb` platform plugin dependency
+* `ros-humble-rmw-cyclonedds-cpp`: CycloneDDS support for ROS 2
 
-`ros-humble-rmw-cyclonedds-cpp` provides CycloneDDS, which avoids the DDS
-discovery problem encountered with the default middleware under Colima.
+CycloneDDS avoids the DDS discovery problem encountered with the default
+middleware under Colima.
 
-This step requires an internet connection.
+This step requires an internet connection and only needs to be completed once
+per container.
 
 ---
 
-## 8. Configure ROS 2 and CycloneDDS
+## 9. Configure the container environment
 
-Inside the container, add the environment configuration to `~/.bashrc`:
+Add the ROS 2 configuration to the container's `~/.bashrc`:
 
 ```bash
 cat >> ~/.bashrc <<'EOF'
@@ -266,14 +247,13 @@ fi
 EOF
 ```
 
-Exit and reopen the container:
+Reload the configuration:
 
 ```bash
-exit
-source ~/ros2_ws/src/run_docker_ros2_mac.sh session1
+source ~/.bashrc
 ```
 
-Verify the configuration:
+Verify it:
 
 ```bash
 echo "$RMW_IMPLEMENTATION"
@@ -292,109 +272,72 @@ host.docker.internal:0
 `ROS_LOCALHOST_ONLY=1` is appropriate because every ROS 2 node runs inside the
 same container. It also avoids unsupported multicast behavior under Colima.
 
----
-
-## 9. Install Python dependencies
-
-If a package has a `requirements.txt`, install it with `pip`.
-
-For example:
-
-```bash
-cd ~/ros2_ws/src/goal_point_publisher
-python3 -m pip install -r requirements.txt
-```
-
-This step requires an internet connection.
+This configuration only needs to be added once per container. Do not repeatedly
+append the same block to `~/.bashrc`.
 
 ---
 
-## 10. Install ROS dependencies and build the workspace
+# Daily Workflow
 
-Inside the container:
+## 10. Start XQuartz
 
-```bash
-cd ~/ros2_ws
-source /opt/ros/humble/setup.bash
-rosdep update
-rosdep install --from-paths src --ignore-src -r -y
-colcon build
-source install/setup.bash
-```
-
-If `rosdep update` fails because rosdep has not been initialized, run:
+On macOS:
 
 ```bash
-rosdep init
-rosdep update
-```
-
-Then run:
-
-```bash
-cd ~/ros2_ws
-rosdep install --from-paths src --ignore-src -r -y
-colcon build
-source install/setup.bash
-```
-
-The `rosdep update` and `rosdep install` steps require an internet connection.
-
-The `colcon build` step does not require internet if all dependencies are
-already installed.
-
----
-
-## 11. Test ROS 2 communication
-
-In the first macOS terminal:
-
-```bash
-source ~/ros2_ws/src/run_docker_ros2_mac.sh session1
-```
-
-Inside the container:
-
-```bash
-ros2 run demo_nodes_cpp talker
-```
-
-Open another macOS terminal and enter the same container:
-
-```bash
-source ~/ros2_ws/src/run_docker_ros2_mac.sh session1
-```
-
-Inside the container:
-
-```bash
-ros2 topic list --no-daemon
-ros2 run demo_nodes_py listener
-```
-
-The topic list should include `/chatter`, and the listener should receive
-messages from the talker.
-
----
-
-## 12. Test graphics
-
-Make sure XQuartz is running on macOS:
-
-```bash
+killall XQuartz 2>/dev/null
 open -a XQuartz
+```
+
+Wait a few seconds, then run:
+
+```bash
 export DISPLAY=:0
 /opt/X11/bin/xhost +localhost
 /opt/X11/bin/xhost +127.0.0.1
 ```
 
-Enter the container:
+Repeat this step after restarting XQuartz or macOS.
+
+---
+
+## 11. Start Colima
+
+Run this in the first terminal:
+
+```bash
+colima start
+```
+
+If Colima is already running, the command will report that it is running.
+
+---
+
+## 12. Enter the ROS 2 container
+
+Use the same session name that was used during container setup:
 
 ```bash
 source ~/ros2_ws/src/run_docker_ros2_mac.sh session1
 ```
 
-Run turtlesim:
+The script starts the existing container if necessary and opens a shell inside
+it.
+
+For every additional terminal, run the same command:
+
+```bash
+source ~/ros2_ws/src/run_docker_ros2_mac.sh session1
+```
+
+Do not use a different session name unless a separate container is intended.
+
+---
+
+# Test the Setup
+
+## 13. Run turtlesim
+
+In the first container terminal:
 
 ```bash
 ros2 run turtlesim turtlesim_node
@@ -402,135 +345,19 @@ ros2 run turtlesim turtlesim_node
 
 The turtlesim window should appear through XQuartz.
 
-RViz can be tested with:
-
-```bash
-rviz2
-```
-
-RViz uses software rendering in this setup and may run more slowly than it does
-on native Linux.
-
----
-
-## 13. Run the exercise
-
-Enter the container:
+Open another macOS terminal and enter the same container:
 
 ```bash
 source ~/ros2_ws/src/run_docker_ros2_mac.sh session1
 ```
 
-Inside the container:
+Run the keyboard controller:
 
 ```bash
-cd ~/ros2_ws
-source install/setup.bash
-ros2 launch turtlesim_controller go_to_goal.launch.py
+ros2 run turtlesim turtle_teleop_key
 ```
 
-This should open:
+Keep the second terminal focused and use the arrow keys to move the turtle.
 
-* The turtlesim simulator GUI
-* The goal publisher interface GUI
-* The robot position-controller node
-
----
-
-## 14. Daily workflow
-
-Start XQuartz and allow local connections:
-
-```bash
-open -a XQuartz
-export DISPLAY=:0
-/opt/X11/bin/xhost +localhost
-/opt/X11/bin/xhost +127.0.0.1
-```
-
-Start Colima:
-
-```bash
-colima start
-```
-
-Open the ROS 2 container:
-
-```bash
-source ~/ros2_ws/src/run_docker_ros2_mac.sh session1
-```
-
-For every additional terminal, run the same command with the same session name:
-
-```bash
-source ~/ros2_ws/src/run_docker_ros2_mac.sh session1
-```
-
----
-
-## 15. Notes about the Docker script
-
-The script:
-
-```bash
-run_docker_ros2_mac.sh
-```
-
-starts a Docker container with:
-
-* ROS 2 Humble Desktop Full
-* XQuartz graphics support
-* CycloneDDS
-* `ROS_LOCALHOST_ONLY=1`
-* Qt shared-memory compatibility settings
-* Software OpenGL rendering
-* The workspace mounted from `~/ros2_ws` to `/root/ros2_ws`
-
-The container name is passed as an argument:
-
-```bash
-source ~/ros2_ws/src/run_docker_ros2_mac.sh session1
-```
-
-To create or enter a different container session:
-
-```bash
-source ~/ros2_ws/src/run_docker_ros2_mac.sh session2
-```
-
-For normal use, use the same session name in every terminal:
-
-```bash
-source ~/ros2_ws/src/run_docker_ros2_mac.sh session1
-```
-
-If the container is already running, the script opens a new shell inside the
-same container. Do not create a separate container for each ROS 2 node.
-
----
-
-## 16. Stop the environment
-
-Exit each container terminal:
-
-```bash
-exit
-```
-
-Stop the container:
-
-```bash
-docker stop session1
-```
-
-Stop Colima when it is no longer needed:
-
-```bash
-colima stop
-```
-
-The workspace remains stored at:
-
-```text
-~/ros2_ws
-```
+Both commands must use the same container session so that the ROS 2 nodes can
+discover each other.
