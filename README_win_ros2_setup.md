@@ -59,7 +59,7 @@ The repository contains the ROS 2 tutorial packages and:
 run_docker_ros2_win.sh
 ```
 
-This script creates or opens the ROS 2 Docker container.
+This script creates or opens the ROS 2 Docker container. Put "run_docker_ros2_win.sh" in the desired location. <locaiton of the file>/run_docker_ros2_win.sh
 
 ---
 
@@ -194,25 +194,9 @@ same block to `~/.bashrc`.
 
 ---
 
-## 10. Install Python dependencies
-
-If a package contains a `requirements.txt`, install it with `pip`.
-
-For example:
-
-```bash
-cd ~/ros2_ws/src/goal_point_publisher
-python3 -m pip install -r requirements.txt
-```
-
-This step requires an internet connection and only needs to be repeated when
-the Python dependencies change.
-
----
-
 # Daily Workflow
 
-## 12. Open WSL
+## 10. Open WSL
 
 Open PowerShell and run:
 
@@ -224,12 +208,12 @@ Make sure Docker Desktop is running.
 
 ---
 
-## 13. Enter the existing ROS 2 container
+## 11. Enter the existing ROS 2 container
 
 Inside WSL:
 
 ```bash
-source ~/ros2_ws/src/run_docker_ros2_win.sh session1
+source <locaiton of the file>/run_docker_ros2_win.sh <session name>
 ```
 
 The script starts `session1` if it is stopped and opens a shell inside it.
@@ -237,7 +221,7 @@ The script starts `session1` if it is stopped and opens a shell inside it.
 For every additional WSL terminal, run the same command:
 
 ```bash
-source ~/ros2_ws/src/run_docker_ros2_win.sh session1
+source <locaiton of the file>/run_docker_ros2_win.sh <session name>
 ```
 
 Do not use another session name. A different name would create another
@@ -245,22 +229,9 @@ container, and its ROS 2 nodes may not communicate with the nodes in
 `session1`.
 
 ---
-
-## 14. Rebuild after changing the source code
-
-Inside the container:
-
-```bash
-cd ~/ros2_ws
-colcon build
-source install/setup.bash
-```
-
----
-
 # Test the Setup
 
-## 15. Run turtlesim
+## 12. Run turtlesim
 
 In the first container terminal:
 
@@ -273,7 +244,7 @@ The turtlesim window should appear through WSLg.
 Open another WSL terminal and enter the same container:
 
 ```bash
-source ~/ros2_ws/src/run_docker_ros2_win.sh session1
+source <locaiton of the file>/run_docker_ros2_win.sh <session name>
 ```
 
 Run the keyboard controller:
@@ -289,24 +260,6 @@ container and network environment.
 
 ---
 
-## 16. Run the exercise
-
-Inside the container:
-
-```bash
-cd ~/ros2_ws
-source install/setup.bash
-ros2 launch turtlesim_controller go_to_goal.launch.py
-```
-
-This should open:
-
-* The turtlesim simulator GUI
-* The goal publisher interface GUI
-* The robot position-controller node
-
----
-
 # Notes About the Docker Script
 
 The script:
@@ -315,14 +268,14 @@ The script:
 run_docker_ros2_win.sh
 ```
 
-must create `session1` as a long-running container on its first invocation.
+must create `<session name>` as a long-running container on its first invocation.
 When `session1` already exists, it must start it if necessary and use
 `docker exec` to open a new shell inside it.
 
 Use:
 
 ```bash
-source ~/ros2_ws/src/run_docker_ros2_win.sh session1
+source <locaiton of the file>/run_docker_ros2_win.sh <session name>
 ```
 
 for every ROS 2 terminal.
