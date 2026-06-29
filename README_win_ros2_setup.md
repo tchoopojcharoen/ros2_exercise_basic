@@ -1,8 +1,5 @@
 # Using ROS2 in Docker Container via WSL
 
-This repository contains basic ROS 2 packages and a helper script for running
-ROS 2 Humble inside Docker on Windows with WSL.
-
 The setup assumes:
 
 * Windows with WSL and WSLg installed
