@@ -158,6 +158,10 @@ source install/setup.bash
 You will rebuild frequently as you add nodes. The tutorial reminds you when to rebuild.
 
 ---
+## To Windows and MacOs Users
+Do not fret. You can follow [README_win_ros2_setup.md] and [README_mac_ros2_setup.md] to run Linux sub-system and docker container that has ROS2 humble pre-installed. Once you are comfortable with openning multiple terminal with the set-up, you can follow the tutorials as normal.
+
+---
 
 ## Start Here
 
