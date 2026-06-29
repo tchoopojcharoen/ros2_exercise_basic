@@ -210,42 +210,6 @@ the Python dependencies change.
 
 ---
 
-## 11. Install ROS dependencies and build the workspace
-
-Inside the container:
-
-```bash
-cd ~/ros2_ws
-source /opt/ros/humble/setup.bash
-rosdep update
-rosdep install --from-paths src --ignore-src -r -y
-colcon build
-source install/setup.bash
-```
-
-If rosdep has not been initialized, run:
-
-```bash
-rosdep init
-rosdep update
-```
-
-Then install the dependencies and build:
-
-```bash
-cd ~/ros2_ws
-rosdep install --from-paths src --ignore-src -r -y
-colcon build
-source install/setup.bash
-```
-
-`rosdep update` and `rosdep install` require an internet connection.
-
-`colcon build` does not require internet when all dependencies are already
-installed.
-
----
-
 # Daily Workflow
 
 ## 12. Open WSL
