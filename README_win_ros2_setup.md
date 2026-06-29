@@ -73,27 +73,6 @@ Create it:
 mkdir -p ~/ros2_ws/src
 ```
 
-Move the repository contents into the workspace:
-
-```bash
-cp -R ~/ros2_exercise_basic/. ~/ros2_ws/src/
-rm -rf ~/ros2_exercise_basic
-```
-
-The workspace should now resemble:
-
-```text
-~/ros2_ws/
-└── src/
-    ├── run_docker_ros2_win.sh
-    ├── README.md
-    ├── <ros2_package_1>/
-    └── <ros2_package_2>/
-```
-
-If a different workspace location is used, update the workspace path inside
-`run_docker_ros2_win.sh`.
-
 ---
 
 ## 4. Verify Docker and WSL graphics
@@ -146,7 +125,7 @@ stopped and restarted.
 ## 7. Create and enter the container
 
 ```bash
-source ~/ros2_ws/src/run_docker_ros2_win.sh session1
+source <locaiton of the file>/run_docker_ros2_win.sh <session name>
 ```
 
 The script starts one long-running ROS 2 Humble container with:
