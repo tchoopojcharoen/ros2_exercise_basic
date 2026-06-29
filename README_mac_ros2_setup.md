@@ -54,6 +54,20 @@ Install XQuartz:
 brew install --cask xquartz
 ```
 
+After installation, **close the current Terminal window and open a new one**.
+The XQuartz installer adds `/opt/X11/bin` to the shell search path, but an
+already-open terminal may not detect this change. This can cause:
+
+```text
+xhost: command not found
+```
+
+Verify the installation:
+
+```bash
+/opt/X11/bin/xhost -help
+```
+
 Enable XQuartz network connections:
 
 ```bash
@@ -86,14 +100,50 @@ killall XQuartz
 open -a XQuartz
 ```
 
-Allow local connections:
+Wait a few seconds for XQuartz to finish starting. The `DISPLAY` variable in a
+normal macOS terminal may be empty, which causes:
 
-```bash
-xhost +localhost
-xhost +127.0.0.1
+```text
+xhost: unable to open display ""
 ```
 
-Run the two `xhost` commands again after restarting XQuartz or macOS.
+Set the display explicitly before running `xhost`:
+
+```bash
+export DISPLAY=:0
+/opt/X11/bin/xhost +localhost
+/opt/X11/bin/xhost +127.0.0.1
+```
+
+Using `/opt/X11/bin/xhost` directly also works when the `xhost` command has not
+yet been added to `PATH`.
+
+Expected output resembles:
+
+```text
+localhost being added to access control list
+127.0.0.1 being added to access control list
+```
+
+If `DISPLAY=:0` does not connect, obtain the display created by XQuartz:
+
+```bash
+export DISPLAY="$(launchctl getenv DISPLAY)"
+echo "$DISPLAY"
+/opt/X11/bin/xhost +localhost
+/opt/X11/bin/xhost +127.0.0.1
+```
+
+If `launchctl getenv DISPLAY` is also empty, quit XQuartz and the current
+Terminal window. Reopen XQuartz first, open a new Terminal window, and repeat:
+
+```bash
+export DISPLAY=:0
+/opt/X11/bin/xhost +localhost
+/opt/X11/bin/xhost +127.0.0.1
+```
+
+Run these commands again after restarting XQuartz or macOS.
 
 ---
 
@@ -333,8 +383,9 @@ Make sure XQuartz is running on macOS:
 
 ```bash
 open -a XQuartz
-xhost +localhost
-xhost +127.0.0.1
+export DISPLAY=:0
+/opt/X11/bin/xhost +localhost
+/opt/X11/bin/xhost +127.0.0.1
 ```
 
 Enter the container:
@@ -392,8 +443,9 @@ Start XQuartz and allow local connections:
 
 ```bash
 open -a XQuartz
-xhost +localhost
-xhost +127.0.0.1
+export DISPLAY=:0
+/opt/X11/bin/xhost +localhost
+/opt/X11/bin/xhost +127.0.0.1
 ```
 
 Start Colima:
