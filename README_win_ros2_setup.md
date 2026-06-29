@@ -118,7 +118,7 @@ This only needs to be done once.
 
 # One-Time Container Setup
 
-The following steps must be completed once for the `session1` container.
+The following steps must be completed once for the `<session name>` container.
 Installed packages and configuration remain available when the container is
 stopped and restarted.
 
