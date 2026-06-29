@@ -42,7 +42,7 @@ main() {
             -e PULSE_SERVER="${PULSE_SERVER:-/mnt/wslg/PulseServer}" \
             -e QT_QPA_PLATFORM=xcb \
             -e ROS_DOMAIN_ID=0 \
-            -v /tmp/.X11-unix:/tmp/.X11-unix \
+            -v /mnt/wslg/.X11-unix:/tmp/.X11-unix \
             -v /mnt/wslg:/mnt/wslg \
             -v "${workspace}:/root/ros2_ws" \
             -w /root/ros2_ws \
