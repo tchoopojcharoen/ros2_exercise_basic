@@ -1,13 +1,15 @@
 # ROS 2 Basic Exercise
 
-This repository contains basic ROS 2 packages and a helper script for running ROS 2 Humble inside Docker on Windows/WSL.
+This repository contains basic ROS 2 packages and a helper script for running
+ROS 2 Humble inside Docker on Windows with WSL.
 
 The setup assumes:
 
-* Windows with WSL installed
+* Windows with WSL and WSLg installed
 * Docker works from inside WSL
-* The Docker image used is `osrf/ros:humble-desktop`
-* A ROS 2 workspace is located at `~/ros2_ws`
+* The Docker image is `osrf/ros:humble-desktop`
+* The ROS 2 workspace is located at `~/ros2_ws`
+* All ROS 2 terminals use the same Docker container
 
 ---
 
@@ -21,9 +23,13 @@ An internet connection is required when:
 * Installing Python packages with `pip`
 * Installing ROS dependencies with `rosdep`
 
-After all required packages are installed and the workspace has been built, an internet connection is **not required** to run existing ROS 2 nodes or launch files locally.
+After the image, packages, and dependencies are installed and the workspace is
+built, an internet connection is not required to run existing ROS 2 nodes or
+launch files locally.
 
 ---
+
+# One-Time Windows Setup
 
 ## 1. Open WSL
 
@@ -33,36 +39,48 @@ Open PowerShell and run:
 wsl
 ```
 
+The remaining commands in this guide should be run inside WSL unless stated
+otherwise.
+
 ---
 
-## 2. Create a ROS 2 workspace
+## 2. Clone the repository
 
-Inside WSL:
+Clone the `tutorials` branch into your WSL home directory:
 
 ```bash
 cd ~
+git clone -b tutorials https://github.com/tchoopojcharoen/ros2_exercise_basic.git
+```
+
+The repository contains the ROS 2 tutorial packages and:
+
+```text
+run_docker_ros2_win.sh
+```
+
+This script creates or opens the ROS 2 Docker container.
+
+---
+
+## 3. Create the ROS 2 workspace
+
+The Docker script expects the workspace to be located at `~/ros2_ws`.
+
+Create it:
+
+```bash
 mkdir -p ~/ros2_ws/src
 ```
 
----
-
-## 3. Clone this repository
-
-Clone the repository into your home directory:
+Move the repository contents into the workspace:
 
 ```bash
-cd ~
-git clone -b main https://github.com/tchoopojcharoen/ros2_exercise_basic.git
+cp -R ~/ros2_exercise_basic/. ~/ros2_ws/src/
+rm -rf ~/ros2_exercise_basic
 ```
 
-Move the repository contents into the ROS 2 workspace `src` folder:
-
-```bash
-mv ros2_exercise_basic/* ~/ros2_ws/src/
-rm -rf ros2_exercise_basic
-```
-
-Your workspace should now look like this:
+The workspace should now resemble:
 
 ```text
 ~/ros2_ws/
@@ -73,11 +91,33 @@ Your workspace should now look like this:
     └── <ros2_package_2>/
 ```
 
+If a different workspace location is used, update the workspace path inside
+`run_docker_ros2_win.sh`.
+
 ---
 
-## 4. Pull the ROS 2 Humble Docker image
+## 4. Verify Docker and WSL graphics
 
-Before running the Docker script, pull the ROS 2 Humble desktop image:
+Verify that Docker is available inside WSL:
+
+```bash
+docker ps
+```
+
+Verify that WSLg has configured the graphical display:
+
+```bash
+echo "$DISPLAY"
+echo "$WAYLAND_DISPLAY"
+```
+
+At least the required WSLg display variables should contain values. If Docker
+is unavailable, start Docker Desktop and confirm that WSL integration is
+enabled for the current WSL distribution.
+
+---
+
+## 5. Pull the ROS 2 Docker image
 
 ```bash
 docker pull osrf/ros:humble-desktop
@@ -87,61 +127,111 @@ This step requires an internet connection.
 
 ---
 
-## 5. Run the ROS 2 Docker container
-
-Make the Docker script executable:
+## 6. Make the Docker script executable
 
 ```bash
 chmod +x ~/ros2_ws/src/run_docker_ros2_win.sh
 ```
 
-Run the container:
+This only needs to be done once.
+
+---
+
+# One-Time Container Setup
+
+The following steps must be completed once for the `session1` container.
+Installed packages and configuration remain available when the container is
+stopped and restarted.
+
+## 7. Create and enter the container
 
 ```bash
 source ~/ros2_ws/src/run_docker_ros2_win.sh session1
 ```
 
-This starts a ROS 2 Humble Docker container with graphics and networking enabled.
+The script starts one long-running ROS 2 Humble container with:
+
+* WSLg graphics support
+* Host networking
+* Shared IPC
+* `~/ros2_ws` mounted at `/root/ros2_ws`
+
+Always use `session1` in every WSL terminal. The script creates the container
+only on the first call. Later calls open additional shells inside that same
+container.
 
 ---
 
-## 6. Install required system packages inside the container
+## 8. Install the required system packages
 
-Inside the Docker container, run:
+Inside the container:
 
 ```bash
 apt update
-apt install -y python3-pip libxcb-cursor0
+apt install -y \
+  python3-pip \
+  libxcb-cursor0
 ```
 
-`python3-pip` is needed to install Python dependencies from `requirements.txt`.
+The packages provide:
 
-`libxcb-cursor0` is needed by PyQt6/Qt to load the `xcb` platform plugin. Without it, you may see an error like:
+* `python3-pip`: installation of Python dependencies
+* `libxcb-cursor0`: the Qt `xcb` platform plugin dependency
+
+Without `libxcb-cursor0`, PyQt6 or Qt may report:
 
 ```text
 qt.qpa.plugin: From 6.5.0, xcb-cursor0 or libxcb-cursor0 is needed to load the Qt xcb platform plugin.
 ```
 
-This step requires an internet connection.
+This step requires an internet connection and only needs to be completed once
+for the container.
 
 ---
 
-## 7. Install Python dependencies
+## 9. Configure the container environment
 
-If a package has a `requirements.txt`, install it with `pip`.
+Inside the container, add the ROS 2 environment configuration to `~/.bashrc`:
+
+```bash
+cat >> ~/.bashrc <<'EOF'
+
+source /opt/ros/humble/setup.bash
+
+if [ -f /root/ros2_ws/install/setup.bash ]; then
+    source /root/ros2_ws/install/setup.bash
+fi
+EOF
+```
+
+Reload the configuration:
+
+```bash
+source ~/.bashrc
+```
+
+This configuration only needs to be added once. Do not repeatedly append the
+same block to `~/.bashrc`.
+
+---
+
+## 10. Install Python dependencies
+
+If a package contains a `requirements.txt`, install it with `pip`.
 
 For example:
 
 ```bash
 cd ~/ros2_ws/src/goal_point_publisher
-python3 -m pip install -r ~/ros2_ws/src/goal_point_publisher/requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
-This step requires an internet connection.
+This step requires an internet connection and only needs to be repeated when
+the Python dependencies change.
 
 ---
 
-## 8. Install ROS dependencies and build the workspace (This is for main branch main only)
+## 11. Install ROS dependencies and build the workspace
 
 Inside the container:
 
@@ -154,14 +244,14 @@ colcon build
 source install/setup.bash
 ```
 
-If `rosdep update` fails because rosdep has not been initialized, run:
+If rosdep has not been initialized, run:
 
 ```bash
 rosdep init
 rosdep update
 ```
 
-Then run:
+Then install the dependencies and build:
 
 ```bash
 cd ~/ros2_ws
@@ -170,55 +260,128 @@ colcon build
 source install/setup.bash
 ```
 
-The `rosdep update` and `rosdep install` steps require an internet connection.
+`rosdep update` and `rosdep install` require an internet connection.
 
-The `colcon build` step does not require internet if all dependencies are already installed.
+`colcon build` does not require internet when all dependencies are already
+installed.
 
 ---
 
-## 9. Run an example (Not available from tutorial branch)
+# Daily Workflow
 
-After building, source the workspace:
+## 12. Open WSL
+
+Open PowerShell and run:
+
+```powershell
+wsl
+```
+
+Make sure Docker Desktop is running.
+
+---
+
+## 13. Enter the existing ROS 2 container
+
+Inside WSL:
 
 ```bash
-ros2 launch turtlesim_controller go_to_goal.launch.py
+source ~/ros2_ws/src/run_docker_ros2_win.sh session1
 ```
-This should run a turtlesim simualtor GUI, a goal publisher interface GUI, and the back-end position-controller of the robot. 
+
+The script starts `session1` if it is stopped and opens a shell inside it.
+
+For every additional WSL terminal, run the same command:
+
+```bash
+source ~/ros2_ws/src/run_docker_ros2_win.sh session1
+```
+
+Do not use another session name. A different name would create another
+container, and its ROS 2 nodes may not communicate with the nodes in
+`session1`.
 
 ---
 
-## 12. Notes about the Docker script
+## 14. Rebuild after changing the source code
+
+Inside the container:
+
+```bash
+cd ~/ros2_ws
+colcon build
+source install/setup.bash
+```
+
+---
+
+# Test the Setup
+
+## 15. Run turtlesim
+
+In the first container terminal:
+
+```bash
+ros2 run turtlesim turtlesim_node
+```
+
+The turtlesim window should appear through WSLg.
+
+Open another WSL terminal and enter the same container:
+
+```bash
+source ~/ros2_ws/src/run_docker_ros2_win.sh session1
+```
+
+Run the keyboard controller:
+
+```bash
+ros2 run turtlesim turtle_teleop_key
+```
+
+Keep the second terminal focused and use the arrow keys to move the turtle.
+
+Both commands must run in `session1` so that the ROS 2 nodes share the same
+container and network environment.
+
+---
+
+## 16. Run the exercise
+
+Inside the container:
+
+```bash
+cd ~/ros2_ws
+source install/setup.bash
+ros2 launch turtlesim_controller go_to_goal.launch.py
+```
+
+This should open:
+
+* The turtlesim simulator GUI
+* The goal publisher interface GUI
+* The robot position-controller node
+
+---
+
+# Notes About the Docker Script
 
 The script:
 
-```bash
+```text
 run_docker_ros2_win.sh
 ```
 
-starts a Docker container with:
+must create `session1` as a long-running container on its first invocation.
+When `session1` already exists, it must start it if necessary and use
+`docker exec` to open a new shell inside it.
 
-* ROS 2 Humble
-* WSL graphics support
-* Host networking
-* Shared IPC
-* The workspace mounted from `~/ros2_ws` to `/root/ros2_ws`
-
-The container name is passed as an argument:
+Use:
 
 ```bash
-~/ros2_ws/src/run_docker_ros2_win.sh session1
+source ~/ros2_ws/src/run_docker_ros2_win.sh session1
 ```
 
-To create or enter a different container session:
+for every ROS 2 terminal.
 
-```bash
-~/ros2_ws/src/run_docker_ros2_win.sh session2
-```
-
-For normal use, use the same session name in every terminal:
-
-```bash
-~/ros2_ws/src/run_docker_ros2_win.sh session1
-```
-
-If the container is already running, the script opens a new shell into the same container.
+Do not repeatedly use `docker run`, because that creates separate containers.
