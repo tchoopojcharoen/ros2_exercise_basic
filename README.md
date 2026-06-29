@@ -1,4 +1,4 @@
-# ROS2 Bootcamp — Turtlesim Controller
+# ROS2 Bootcamp Tutorials
 
 A hands-on tutorial series for learning ROS2 through turtlesim. You build a working robot controller from scratch, adding capabilities section by section — parameters, services, actions, and lifecycle management — until the system steers a simulated turtle toward any goal you click.
 
