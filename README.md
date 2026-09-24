@@ -1,4 +1,4 @@
-# ROS 2 Bootcamp — Turtlesim Controller
+# ROS 2 Basic Bootcamp 
 
 A hands-on tutorial series for learning ROS 2 through turtlesim. You start with the command-line tools, write a Python package from scratch, add parameters, services, actions, and lifecycle management, learn the tools professionals use to debug and record a running system, and finish by launching the whole system with a single command. The result steers a simulated turtle toward any goal you click.
 
